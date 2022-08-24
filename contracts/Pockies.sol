@@ -147,6 +147,13 @@ contract Pockies is Ownable, Pausable, ReentrancyGuard, ERC721A, IPockies {
 
     // Only Owner
 
+    function claimPockies(address _receiver, uint256 _mintAmount)
+        external
+        onlyOwner
+    {
+        _mintPockies(_receiver, _mintAmount);
+    }
+
     function pause() external whenNotPaused onlyOwner {
         _pause();
     }
@@ -283,5 +290,10 @@ contract Pockies is Ownable, Pausable, ReentrancyGuard, ERC721A, IPockies {
         returns (uint256 totalPockiesMinted)
     {
         totalPockiesMinted = s_totalPockiesMinted[_owner];
+    }
+
+    function withdraw() external onlyOwner {
+        (bool os, ) = payable(owner()).call{value: address(this).balance}("");
+        require(os);
     }
 }

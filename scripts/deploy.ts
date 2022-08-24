@@ -1,22 +1,30 @@
-import { ethers } from "hardhat";
+const { ethers } = require("hardhat");
+import { verify } from "../utils/verify";
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+  console.log("Collecting artifacts......");
+  const Pockies = await ethers.getContractFactory("Pockies");
 
-  const lockedAmount = ethers.utils.parseEther("1");
+  const rootHash =
+    "0xff8dedfbfa60af186cf3c830acbc32c05aae823045ae5ea7da1e45fbfaba4f92";
+  const hiddenUri = "iamhiddenuri";
 
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  const args = [rootHash, hiddenUri];
 
-  await lock.deployed();
+  const pockies = await Pockies.deploy(rootHash, hiddenUri);
 
-  console.log(`Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`);
+  console.log("Deploying Pockies......");
+
+  await pockies.deployed();
+
+  console.log(`Pockies Deployed at${pockies.address}`);
+
+  if (process.env.ETHERSCAN_API_KEY) {
+    console.log("Verifying Pockies...");
+    await verify(pockies.address, args);
+  }
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
