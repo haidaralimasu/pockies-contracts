@@ -10,9 +10,9 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
 import {ERC721A} from "erc721a/contracts/ERC721A.sol";
 import {IPockies} from "./interface/IPockies.sol";
-import {KeeperCompatibleInterface} from '@chainlink/contracts/src/v0.8/interfaces/KeeperCompatibleInterface.sol';
+import {KeeperCompatible} from "@chainlink/contracts/src/v0.8/KeeperCompatible.sol";
 
-contract Pockies is Ownable, Pausable, ReentrancyGuard, ERC721A, IPockies, KeeperCompatibleInterface {
+contract Pockies is KeeperCompatible, Ownable, Pausable, ReentrancyGuard, ERC721A, IPockies  {
     using Strings for uint256;
     using MerkleProof for bytes32;
 
@@ -27,24 +27,22 @@ contract Pockies is Ownable, Pausable, ReentrancyGuard, ERC721A, IPockies, Keepe
     bool private s_isPresale = true;
     bool private s_isRevealed = false;
 
-    bytes32 private s_rootHash;
+    bytes32 private s_rootHash = 0x09f24ae8a8c3480481a408ff73faed09de897468a9f3655348c2e777cbb798a0;
 
     string private s_baseUri;
-    string private s_hiddenUri;
+    string private s_hiddenUri = 'https://gateway.pinata.cloud/ipfs/QmRPMXbF5agAxRCDGxwYzcZdUDB11ij6CjucJiMefS5wCd';
 
     string private contractURIHash =
         "QmcXihk9zRXqZFYyxjBaSDzjP86q135BNaFTbDyYSKGKjq";
 
     mapping(address => uint256) private s_totalPockiesMinted;
 
-    constructor(bytes32 rootHash, string memory hiddenUri)
+    constructor()
         ERC721A("Pockies", "POCKIE")
     {
-        s_rootHash = rootHash;
-        s_hiddenUri = hiddenUri;
     }
  
-    function checkUpKeep(bytes memory /*checkData*/) public override returns(bool upKeepNeeded, bytes memory /*performData*/) {
+    function checkUpkeep(bytes memory /*checkData*/) public override returns(bool upKeepNeeded, bytes memory /*performData*/) {
         if (s_isPresale == true) {
             if (block.timestamp > s_presaleEndTime) {
                 return(true, "");
@@ -56,7 +54,7 @@ contract Pockies is Ownable, Pausable, ReentrancyGuard, ERC721A, IPockies, Keepe
     }
     
     function performUpkeep(bytes calldata /*performData*/) external override whenNotPaused nonReentrant{
-        (bool upKeepNeeded,) = checkUpKeep("");
+        (bool upKeepNeeded,) = checkUpkeep("");
         require(upKeepNeeded,"Pockies: Upkeep Not Needed");
         s_isPresale = s_isPresale;
     }
@@ -252,11 +250,11 @@ contract Pockies is Ownable, Pausable, ReentrancyGuard, ERC721A, IPockies, Keepe
         );
 
         if (s_isRevealed == false) {
-            tokenUri = s_hiddenUri;
+            return s_hiddenUri;
         }
 
         string memory currentBaseURI = _baseURI();
-        tokenUri = bytes(currentBaseURI).length > 0
+        return bytes(currentBaseURI).length > 0
             ? string(
                 abi.encodePacked(currentBaseURI, tokenId.toString(), ".json")
             )

@@ -1,31 +1,25 @@
-const { ethers } = require("hardhat");
-import { verify } from "../utils/verify";
+const { ethers } = require('hardhat')
+import { verify } from '../utils/verify'
 
 async function main() {
-  console.log("Collecting artifacts......");
-  const Pockies = await ethers.getContractFactory("Pockies");
+  console.log('Collecting artifacts......')
+  const Pockies = await ethers.getContractFactory('Pockies')
 
-  const rootHash =
-    "0xff8dedfbfa60af186cf3c830acbc32c05aae823045ae5ea7da1e45fbfaba4f92";
-  const hiddenUri = "iamhiddenuri";
+  const pockies = await Pockies.deploy()
 
-  const args = [rootHash, hiddenUri];
+  console.log('Deploying Pockies......')
 
-  const pockies = await Pockies.deploy(rootHash, hiddenUri);
+  await pockies.deployed()
 
-  console.log("Deploying Pockies......");
-
-  await pockies.deployed();
-
-  console.log(`Pockies Deployed at${pockies.address}`);
+  console.log(`Pockies Deployed at${pockies.address}`)
 
   if (process.env.ETHERSCAN_API_KEY) {
-    console.log("Verifying Pockies...");
-    await verify(pockies.address, args);
+    console.log('Verifying Pockies...')
+    await verify(pockies.address, [])
   }
 }
 
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+  console.error(error)
+  process.exitCode = 1
+})
