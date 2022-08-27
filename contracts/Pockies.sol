@@ -29,7 +29,8 @@ contract Pockies is Ownable, Pausable, ReentrancyGuard, ERC721A, IPockies {
     string private s_baseUri;
     string private s_hiddenUri;
 
-    string private immutable contractURIHash;
+    string private contractURIHash =
+        "QmcXihk9zRXqZFYyxjBaSDzjP86q135BNaFTbDyYSKGKjq";
 
     mapping(address => uint256) private s_totalPockiesMinted;
 

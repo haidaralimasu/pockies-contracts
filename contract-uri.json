@@ -1,7 +1,7 @@
 {
   "name": "Pockies",
   "description": "Pockies are cute companions that will guide and help you throughout your stay in the U-Topia Metaverse.",
-  "image": "ipfs://QmNdUibRHNqX2byJLtCD3ofn65cfCtvXdQnV87wRjqWf96",
+  "image": "https://gateway.pinata.cloud/ipfs/QmaDyvADzV2zngxeCcx1wujD2XcB45LJSAMu1nKSBWaZEJ",
   "external_link": "https://u-topia.io",
   "seller_fee_basis_points": 333,
   "fee_recipient": "0x687BCCCfe5c3b2994C94B3bAa11aCa1D2432B54B"

@@ -5,7 +5,7 @@
     "hardhat": "^2.10.2"
   },
   "dependencies": {
-    "@chainlink/contracts": "^0.4.2",
+    "@chainlink/contracts": "^0.4.1",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.3",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.4",
     "@nomiclabs/hardhat-ethers": "^2.1.1",
