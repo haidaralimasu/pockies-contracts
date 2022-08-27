@@ -10,10 +10,13 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
 import {ERC721A} from "erc721a/contracts/ERC721A.sol";
 import {IPockies} from "./interface/IPockies.sol";
+import {KeeperCompatibleInterface} from '@chainlink/contracts/src/v0.8/interfaces/KeeperCompatibleInterface.sol';
 
-contract Pockies is Ownable, Pausable, ReentrancyGuard, ERC721A, IPockies {
+contract Pockies is Ownable, Pausable, ReentrancyGuard, ERC721A, IPockies, KeeperCompatibleInterface {
     using Strings for uint256;
     using MerkleProof for bytes32;
+
+    uint256 private  s_presaleEndTime = 1661645157;
 
     uint256 private immutable i_maxPockies = 10000;
 
@@ -40,8 +43,23 @@ contract Pockies is Ownable, Pausable, ReentrancyGuard, ERC721A, IPockies {
         s_rootHash = rootHash;
         s_hiddenUri = hiddenUri;
     }
-
-    // internal
+ 
+    function checkUpKeep(bytes memory /*checkData*/) public override returns(bool upKeepNeeded, bytes memory /*performData*/) {
+        if (s_isPresale == true) {
+            if (block.timestamp > s_presaleEndTime) {
+                return(true, "");
+            }
+            
+        }else{
+            return(false,"");
+        }
+    }
+    
+    function performUpkeep(bytes calldata /*performData*/) external override whenNotPaused nonReentrant{
+        (bool upKeepNeeded,) = checkUpKeep("");
+        require(upKeepNeeded,"Pockies: Upkeep Not Needed");
+        s_isPresale = s_isPresale;
+    }
 
     function _baseURI()
         internal
@@ -213,6 +231,12 @@ contract Pockies is Ownable, Pausable, ReentrancyGuard, ERC721A, IPockies {
         emit HiddenUriUpdated(_newHiddenUri);
     }
 
+    function updatePreslaeEndTime(uint256 _presaleEndTime) external onlyOwner {
+        s_presaleEndTime = _presaleEndTime;
+
+        emit PresaleEndTimeUpdated();
+    }
+
     // View Functions
 
     function tokenURI(uint256 tokenId)
@@ -249,6 +273,10 @@ contract Pockies is Ownable, Pausable, ReentrancyGuard, ERC721A, IPockies {
         returns (uint256 pricePerPockie)
     {
         pricePerPockie = s_pricePerPockie;
+    }
+
+    function getPresaleEndTime() external view returns (uint256 _presaleEndTime) {
+        _presaleEndTime = s_presaleEndTime;
     }
 
     function getMaxPockiePerWallet()

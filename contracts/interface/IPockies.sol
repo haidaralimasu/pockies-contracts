@@ -12,4 +12,5 @@ interface IPockies {
     event HiddenUriUpdated(string newHiddenUri);
     event PockiesRevealed();
     event PockiesMinted(address receiver, uint256 mintAmount);
+    event PresaleEndTimeUpdated();
 }
