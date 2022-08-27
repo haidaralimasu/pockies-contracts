@@ -29,6 +29,8 @@ contract Pockies is Ownable, Pausable, ReentrancyGuard, ERC721A, IPockies {
     string private s_baseUri;
     string private s_hiddenUri;
 
+    string private immutable contractURIHash;
+
     mapping(address => uint256) private s_totalPockiesMinted;
 
     constructor(bytes32 rootHash, string memory hiddenUri)
@@ -290,6 +292,14 @@ contract Pockies is Ownable, Pausable, ReentrancyGuard, ERC721A, IPockies {
         returns (uint256 totalPockiesMinted)
     {
         totalPockiesMinted = s_totalPockiesMinted[_owner];
+    }
+
+    function contractURI()
+        public
+        view
+        returns (string memory _contractUriHash)
+    {
+        _contractUriHash = string(abi.encodePacked("ipfs://", contractURIHash));
     }
 
     function withdraw() external onlyOwner {
